@@ -27,17 +27,21 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
   const [attempt, setAttempt] = useState(0);
   const [outcome, setOutcome] = useState<SearchOutcome | null>(null);
 
+  const [submitted, setSubmitted] = useState<string | null>(null); // texte validé avec Entrée
+
   const trimmed = text.trim();
   const debounced = useDebouncedValue(trimmed, SEARCH_DELAY_MS);
-  const isTyping = trimmed.length >= MIN_QUERY_LENGTH && trimmed !== debounced && trimmed !== chosen;
+  // Entrée lance la recherche immédiatement pour le texte courant ; sinon on attend la fin de la saisie.
+  const query = submitted === trimmed ? trimmed : debounced;
+  const isTyping = trimmed.length >= MIN_QUERY_LENGTH && trimmed !== query && trimmed !== chosen;
   // Après un choix, la liste disparaît tout de suite (sans attendre la fin de l'anti-rebond).
-  const isSearching = debounced.length >= MIN_QUERY_LENGTH && trimmed !== chosen && debounced !== chosen;
-  const searchKey = `${debounced}:${attempt}`;
+  const isSearching = query.length >= MIN_QUERY_LENGTH && trimmed !== chosen && query !== chosen;
+  const searchKey = `${query}:${attempt}`;
 
   useEffect(() => {
     if (!isSearching) return;
     const controller = new AbortController();
-    searchLocalities(debounced, controller.signal).then(
+    searchLocalities(query, controller.signal).then(
       (results) => {
         if (!controller.signal.aborted) setOutcome({ key: searchKey, results });
       },
@@ -46,7 +50,7 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
       },
     );
     return () => controller.abort();
-  }, [debounced, isSearching, searchKey]);
+  }, [query, isSearching, searchKey]);
 
   // Une réponse n'est montrée que si elle répond à la recherche en cours.
   const current = isSearching && outcome?.key === searchKey ? outcome : null;
@@ -54,6 +58,20 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
 
   // Clavier : ↓ depuis le champ ouvre la liste, ↑ ↓ Début Fin la parcourent, ↑ sur le premier ou Échap revient au champ.
   function onInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (trimmed.length < MIN_QUERY_LENGTH) return;
+      // Résultats déjà affichés pour ce texte : on ouvre le résultat évident (nom identique ou résultat unique).
+      if (current && "results" in current) {
+        const same = (name: string) => name.trim().toLowerCase() === trimmed.toLowerCase();
+        const obvious = current.results.find((locality) => same(locality.name)) ?? (current.results.length === 1 ? current.results[0] : undefined);
+        if (obvious) choose(obvious);
+        return;
+      }
+      setSubmitted(trimmed); // lance la recherche tout de suite
+      if (current && "message" in current) setAttempt((count) => count + 1); // après une erreur : réessaie
+      return;
+    }
     if (event.key !== "ArrowDown") return;
     const first = listRef.current?.querySelector("button");
     if (first) {
@@ -132,7 +150,7 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
         )}
         {!showLoading && current && "results" in current && current.results.length === 0 && (
           <StatusMessage
-            message={`Aucune localité du Bénin ne correspond à « ${debounced} ».`}
+            message={`Aucune localité du Bénin ne correspond à « ${query} ».`}
             hint="Vérifiez l'orthographe ou essayez avec 3 caractères ou plus."
           />
         )}

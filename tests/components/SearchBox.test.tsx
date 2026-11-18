@@ -326,3 +326,82 @@ describe("SearchBox : navigation au clavier dans la liste", () => {
     expect(document.activeElement).toBe(input);
   });
 });
+
+describe("SearchBox : touche Entrée dans le champ", () => {
+  it("lance la recherche immédiatement, sans attendre l'anti-rebond", async () => {
+    searchMock.mockResolvedValue([parakou, abomey]);
+    const { user, input } = setup();
+    await user.type(input, "Pa");
+    expect(searchMock).not.toHaveBeenCalled();
+    await user.keyboard("{Enter}");
+    await wait(0);
+    expect(searchMock).toHaveBeenCalledExactlyOnceWith("Pa", expect.any(AbortSignal));
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("ne fait rien sous 2 caractères", async () => {
+    const { user, input } = setup();
+    await user.type(input, "P");
+    await user.keyboard("{Enter}");
+    await wait(2000);
+    expect(searchMock).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("ne lance pas deux requêtes (Entrée puis fin du délai)", async () => {
+    searchMock.mockResolvedValue([parakou, abomey]);
+    const { user, input } = setup();
+    await user.type(input, "Pa");
+    await user.keyboard("{Enter}");
+    await wait(2000);
+    expect(searchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("un second Entrée ouvre le résultat unique", async () => {
+    searchMock.mockResolvedValue([parakou]);
+    const { user, onSelect, input } = setup();
+    await user.type(input, "Pa");
+    await user.keyboard("{Enter}");
+    await wait(0);
+    expect(onSelect).not.toHaveBeenCalled();
+    await user.keyboard("{Enter}");
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith(parakou);
+  });
+
+  it("un second Entrée ouvre le résultat dont le nom est identique au texte tapé", async () => {
+    searchMock.mockResolvedValue([abomey, parakou]);
+    const { user, onSelect, input } = setup();
+    await user.type(input, "parakou");
+    await user.keyboard("{Enter}");
+    await wait(0);
+    await user.keyboard("{Enter}");
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith(parakou);
+  });
+
+  it("ne choisit pas au hasard quand plusieurs résultats sont possibles", async () => {
+    searchMock.mockResolvedValue([parakou, abomey]);
+    const { user, onSelect, input } = setup();
+    await user.type(input, "Pa");
+    await user.keyboard("{Enter}");
+    await wait(0);
+    await user.keyboard("{Enter}");
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("après une erreur, Entrée relance la recherche", async () => {
+    searchMock
+      .mockRejectedValueOnce(new ApiError("network", "Impossible de joindre le service météo. Vérifiez votre connexion."))
+      .mockResolvedValueOnce([parakou]);
+    const { user, input } = setup();
+    await user.type(input, "Parakou");
+    await user.keyboard("{Enter}");
+    await wait(0);
+    expect(screen.getByRole("alert")).toBeTruthy();
+    await user.keyboard("{Enter}");
+    await wait(0);
+    expect(searchMock).toHaveBeenCalledTimes(2);
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getByRole("button", { name: /Parakou/ })).toBeTruthy();
+  });
+});
