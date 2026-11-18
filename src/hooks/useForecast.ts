@@ -5,7 +5,7 @@ import { fetchForecast } from "@/lib/api";
 import { toUserMessage } from "@/lib/errors";
 import type { Forecast, Locality } from "@/types/weather";
 
-export type ForecastState =
+type ForecastState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "success"; data: Forecast }
