@@ -26,11 +26,11 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
 - [ ] Liste des résultats : nom, département, population si connue
 - [ ] Météo actuelle : température, ressentie, humidité, vent, description en français, pictogramme
 - [ ] Prévisions sur 7 jours : date en français, min, max, cumul et probabilité de pluie
+- [ ] « Vigilance pluie » bien visible sur les jours concernés
 - [ ] Favoris : ajouter, retirer, retrouver en un clic, conservés après rechargement
 - [ ] États : chargement, aucun résultat, erreur avec « Réessayer »
 
-## Phase 3 : Règles de gestion et finition
-- [ ] « Vigilance pluie » bien visible sur les jours concernés
+## Phase 3 : Finition et vérification mobile
 - [ ] Utilisable à 360 px de large, sans défilement horizontal
 - [ ] Jamais de page blanche ni de message technique
 - [ ] Accessibilité de base (labels, focus visible, contrastes)
