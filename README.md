@@ -25,6 +25,12 @@ Les données viennent de l'API publique [Open-Meteo](https://open-meteo.com/) (s
 - **Mise en ligne** : l'application est déployée sur Vercel (https://meteo-benin.vercel.app), sans aucune configuration ni variable d'environnement.
 - **Tests automatisés** (238 tests) : traduction des codes météo, règle de vigilance, formats, favoris, adresse partageable, géolocalisation, accès à l'API (dont les heures), graphique et comportement des composants.
 
+## Charte graphique
+- **Bleu** pour la marque (bandeau d'en-tête, titres de section, actions) ; **cyan pour la pluie** : valeurs de pluie, jauge de probabilité et barres du graphique (jeton `--rain` dans `src/app/globals.css`, avec une variante pour le mode sombre) ; **rouge réservé à la vigilance** ; orange pour la température maximale, indigo pour la minimale ; ambre pour les favoris.
+- **Jamais la couleur seule** : chaque information garde son texte (« Vigilance pluie », « Min », « Max », « Pluie »).
+- **Sobre et lisible** : cartes blanches sur fond gris clair, un seul bandeau d'en-tête, apparition douce de la météo (désactivée pour qui préfère moins de mouvement), thème sombre automatique.
+- **Ce qui est cliquable se voit** : les résultats de recherche ont une flèche « › », un texte d'aide et le curseur « main » ; les favoris sont des pastilles avec une étoile.
+
 ## Prérequis
 - Node.js 20.9 ou plus récent, et npm.
 
