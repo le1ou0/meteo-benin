@@ -40,7 +40,7 @@ export function MyLocationButton({ onLocate }: { onLocate: (locality: Locality) 
         type="button"
         onClick={locate}
         disabled={state.status === "locating"}
-        className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-900 outline-none hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 text-sm font-semibold text-blue-900 outline-none transition-colors hover:bg-blue-100 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:opacity-60 sm:w-auto dark:border-blue-900 dark:bg-blue-950 dark:text-blue-100 dark:hover:bg-blue-900"
       >
         <span aria-hidden="true">📍</span>
         Ma position

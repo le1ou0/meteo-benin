@@ -116,6 +116,23 @@ describe("SearchBox : résultats", () => {
     expect(norm(screen.getByRole("listitem").textContent ?? "")).toBe("Petit hameau");
   });
 
+  it("indique qu'il faut choisir une localité (texte d'aide visible avec les résultats)", async () => {
+    searchMock.mockResolvedValue([parakou]);
+    const { user, input } = setup();
+    await user.type(input, "Pa");
+    expect(screen.queryByText(/Choisissez une localité pour afficher sa météo/)).toBeNull();
+    await wait(400);
+    expect(screen.getByText(/Choisissez une localité pour afficher sa météo/)).toBeTruthy();
+  });
+
+  it("n'affiche pas l'aide quand il n'y a aucun résultat", async () => {
+    searchMock.mockResolvedValue([]);
+    const { user, input } = setup();
+    await user.type(input, "zzzzqq");
+    await wait(400);
+    expect(screen.queryByText(/Choisissez une localité pour afficher sa météo/)).toBeNull();
+  });
+
   it("signale les localités déjà en favori", async () => {
     searchMock.mockResolvedValue([parakou, abomey]);
     const { user, input } = setup((id) => id === parakou.id);

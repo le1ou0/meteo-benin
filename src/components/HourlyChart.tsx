@@ -39,9 +39,9 @@ export function HourlyChart({ points }: { points: HourlyPoint[] }) {
   return (
     <section
       aria-labelledby="hourly-title"
-      className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
+      className="fade-in rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
     >
-      <h3 id="hourly-title" className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">
+      <h3 id="hourly-title" className="text-sm font-semibold tracking-wide text-blue-800 dark:text-sky-300">
         Prochaines 24 heures
       </h3>
       <figure className="mt-3">
@@ -62,7 +62,7 @@ export function HourlyChart({ points }: { points: HourlyPoint[] }) {
                 y={baseline - barHeight(point.precipitation)}
                 width={barWidth}
                 height={barHeight(point.precipitation)}
-                className="fill-sky-500/70"
+                className="fill-rain/70"
               />
             ) : null,
           )}
@@ -81,7 +81,7 @@ export function HourlyChart({ points }: { points: HourlyPoint[] }) {
             Température
           </span>
           <span className="inline-flex items-center gap-1">
-            <span aria-hidden="true" className="inline-block h-3 w-3 bg-sky-500/70" />
+            <span aria-hidden="true" className="inline-block h-3 w-3 bg-rain/70" />
             Pluie
           </span>
           <span className="mt-1 block text-xs text-zinc-600 dark:text-zinc-400">{summary}</span>

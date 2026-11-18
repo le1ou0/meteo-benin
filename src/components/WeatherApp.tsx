@@ -21,9 +21,11 @@ export function WeatherApp() {
 
   return (
     <div className="space-y-6">
-      <SearchBox onSelect={select} isFavorite={isFavorite} />
-      <MyLocationButton onLocate={select} />
-      <FavoritesBar favorites={favorites} selectedId={selected?.id ?? null} onSelect={select} onRemove={remove} />
+      <div className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg shadow-blue-950/10 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
+        <SearchBox onSelect={select} isFavorite={isFavorite} />
+        <MyLocationButton onLocate={select} />
+        <FavoritesBar favorites={favorites} selectedId={selected?.id ?? null} onSelect={select} onRemove={remove} />
+      </div>
       <WeatherPanel locality={selected} isFavorite={selectedIsFavorite} onToggleFavorite={toggleFavorite} />
     </div>
   );

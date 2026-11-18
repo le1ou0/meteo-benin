@@ -88,9 +88,13 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
 
   return (
     <section aria-label="Recherche d'une localité">
-      <label htmlFor={inputId} className="block text-sm font-semibold">
+      <label htmlFor={inputId} className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
         Rechercher une localité
       </label>
+      <div className="relative mt-1">
+        <span aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg">
+          🔍
+        </span>
       <input
         id={inputId}
         ref={inputRef}
@@ -105,8 +109,9 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
         autoComplete="off"
         spellCheck={false}
         aria-describedby={helpId}
-        className="mt-1 h-12 w-full rounded-lg border border-zinc-300 bg-white px-4 text-base text-zinc-900 outline-none placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-blue-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+        className="h-13 w-full rounded-xl border border-zinc-300 bg-zinc-50 pl-11 pr-4 text-base text-zinc-900 outline-none transition-colors placeholder:text-zinc-500 focus-visible:border-blue-600 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-blue-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:focus-visible:bg-zinc-800"
       />
+      </div>
       <p id={helpId} className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
         Saisissez au moins {MIN_QUERY_LENGTH} caractères.
       </p>
@@ -132,6 +137,12 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
           />
         )}
         {!showLoading && current && "results" in current && current.results.length > 0 && (
+          <p className="mb-2 text-sm font-medium text-blue-800 dark:text-sky-300">
+            Choisissez une localité pour afficher sa météo.
+            <span className="hidden text-zinc-600 sm:inline dark:text-zinc-400"> (↓ pour parcourir, Entrée pour choisir)</span>
+          </p>
+        )}
+        {!showLoading && current && "results" in current && current.results.length > 0 && (
           <ul
             ref={listRef}
             onKeyDown={onListKeyDown}
@@ -145,7 +156,7 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
                   <button
                     type="button"
                     onClick={() => choose(locality)}
-                    className="flex min-h-14 w-full items-center justify-between gap-3 px-4 py-2 text-left outline-none hover:bg-blue-50 focus-visible:bg-blue-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 dark:hover:bg-zinc-800 dark:focus-visible:bg-zinc-800"
+                    className="group flex min-h-14 w-full items-center justify-between gap-3 px-4 py-2 text-left outline-none transition-colors after:ml-auto after:text-2xl after:leading-none after:text-blue-700 after:transition-transform after:content-['›'] hover:bg-blue-50 hover:after:translate-x-0.5 focus-visible:bg-blue-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 dark:after:text-sky-300 dark:hover:bg-zinc-800 dark:focus-visible:bg-zinc-800"
                   >
                     <span>
                       <span className="block font-semibold">{locality.name}</span>

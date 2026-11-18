@@ -41,10 +41,10 @@ export function WeatherPanel({ locality, isFavorite, onToggleFavorite }: Weather
   const details = [locality.department, formatPopulation(locality.population)].filter(Boolean).join(" · ");
 
   return (
-    <section aria-labelledby="locality-title" className="space-y-4">
+    <section aria-labelledby="locality-title" className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 id="locality-title" className="text-2xl font-bold">
+          <h2 id="locality-title" className="text-3xl font-bold tracking-tight">
             {locality.name}
           </h2>
           {details && <p className="text-sm text-zinc-600 dark:text-zinc-400">{details}</p>}
