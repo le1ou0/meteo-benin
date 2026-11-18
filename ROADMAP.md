@@ -42,10 +42,10 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
 - [ ] Dépôt en ligne, poussé
 
 ## Phase 5 : Bonus (dans cet ordre, seulement si le temps le permet)
-1. [ ] Adresse partageable : la localité dans l'URL
-2. [ ] Navigation complète au clavier dans la liste des résultats
-3. [ ] Tests automatisés : unitaires (codes météo, vigilance, formats, favoris, accès API) et de composants
-4. [ ] Bouton « Ma position »
+1. [x] Adresse partageable : la localité dans l'URL
+2. [x] Navigation complète au clavier dans la liste des résultats
+3. [x] Tests automatisés : unitaires (codes météo, vigilance, formats, favoris, accès API) et de composants
+4. [x] Bouton « Ma position »
 5. [ ] Graphique température et pluie sur 24 heures
 6. [ ] Mise en ligne
 

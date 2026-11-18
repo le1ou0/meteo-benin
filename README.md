@@ -16,7 +16,10 @@ Les données viennent de l'API publique [Open-Meteo](https://open-meteo.com/) (s
 **Règles de gestion** : dates et heures du Bénin (GMT+1) quel que soit le fuseau de l'ordinateur ; températures arrondies à l'entier (°C), vent en km/h, pluie en mm avec une décimale ; utilisable sur un écran de 360 px comme sur ordinateur, sans défilement horizontal.
 
 **Bonus réalisés**
-- **Tests automatisés** (166 tests) : traduction des codes météo, règle de vigilance, formats, favoris, accès à l'API, et comportement des composants.
+- **Adresse partageable** : la localité affichée apparaît dans l'adresse (`?lieu=Parakou&id=…&lat=…&lon=…`) ; ouvrir cette adresse affiche directement la même localité, sans nouvelle recherche. Recharger la page et les boutons précédent et suivant du navigateur fonctionnent.
+- **Navigation au clavier dans la liste des résultats** : `↓` depuis le champ ouvre la liste, `↑` `↓` `Début` `Fin` la parcourent, `Échap` revient au champ, `Entrée` choisit.
+- **Bouton « Ma position »** : affiche la météo de l'endroit où se trouve l'utilisateur, avec un message clair s'il refuse la géolocalisation (et un bouton « Réessayer »).
+- **Tests automatisés** (219 tests) : traduction des codes météo, règle de vigilance, formats, favoris, adresse partageable, géolocalisation, accès à l'API, et comportement des composants.
 
 ## Prérequis
 - Node.js 20.9 ou plus récent, et npm.
@@ -38,7 +41,7 @@ Aucune configuration ni clé d'API n'est nécessaire.
 ## Vérifications
 | Commande | Rôle |
 |---|---|
-| `npm test` | lance les 166 tests (Vitest, sans accès au réseau) |
+| `npm test` | lance les 219 tests (Vitest, sans accès au réseau) |
 | `npm run typecheck` | vérifie les types TypeScript |
 | `npm run lint` | ESLint |
 | `npm run build` | build de production |
@@ -49,6 +52,7 @@ Aucune configuration ni clé d'API n'est nécessaire.
 - **Couche d'accès unique** (`src/lib/api.ts`) : aucun `fetch` ailleurs. Les erreurs sont typées (`network`, `timeout`, `rate-limit`, `http`) pour afficher un message précis en français ; délai maximal de 8 secondes par appel ; réponse de l'API validée (une valeur manquante ne devient jamais « NaN »).
 - **Localités seulement** : l'API de géocodage renvoie aussi des aéroports ; seuls les lieux habités (`feature_code` commençant par `PPL`) sont proposés, et la recherche est limitée au Bénin (`countryCode=BJ`).
 - **Dates du Bénin** : `Intl.DateTimeFormat` avec le fuseau `Africa/Porto-Novo`, donc indépendantes du fuseau et de la langue de l'ordinateur. L'heure de mise à jour est celle renvoyée par l'API, sans conversion.
+- **Adresse partageable** : la localité vit dans l'adresse, relue avec une validation stricte (une adresse invalide affiche l'accueil). Les coordonnées de « Ma position » sont arrondies à 2 décimales (environ 1 km) avant d'apparaître dans l'adresse.
 - **Favoris** : `useSyncExternalStore` branché sur `localStorage` (pas d'écart d'hydratation), lecture tolérante (contenu invalide ignoré), synchronisés entre onglets.
 - **État dérivé à l'affichage** : chaque réponse porte la clé de la requête qui l'a produite, donc une réponse tardive d'une ancienne recherche ou d'une ancienne localité n'est jamais affichée.
 - **Pictogrammes en emoji**, toujours accompagnés du texte (aucune information portée par l'image seule).
@@ -72,19 +76,17 @@ ROADMAP.md        feuille de route et avancement
 Le projet a été développé avec un assistant IA (Claude), par phases : pour chaque phase, un document écrit **avant** le code (`docs/phase-N-*.md`) fixe les tâches et les critères de validation, puis le code est écrit, puis chaque critère est vérifié (commandes, tests, essais dans Chrome) et consigné dans le journal du document. Seules les cases réellement vérifiées sont cochées dans [`ROADMAP.md`](ROADMAP.md).
 
 ## Ce qui manque, et pourquoi
-Le socle et les règles de gestion ont été traités en priorité ; ces éléments facultatifs n'ont **pas** été réalisés :
-- **Bouton « Ma position »** (géolocalisation) : non fait faute de temps.
+Le socle, les règles de gestion et la plupart des bonus ont été traités ; ces éléments facultatifs n'ont **pas** été réalisés :
 - **Graphique heure par heure sur 24 heures** : non fait faute de temps. L'API le permet (`hourly` avec `forecast_hours=24`).
-- **Adresse partageable** (la localité dans l'URL) : non fait faute de temps.
-- **Navigation au clavier avec les flèches dans la liste des résultats** : non faite. La navigation par `Tab`, `Entrée` et `Espace` fonctionne.
 - **Mise en ligne** : non faite faute de temps.
 
 ## Limites connues
 - Avec **2 caractères**, l'API de géocodage ne renvoie que des correspondances **exactes** (la recherche approchée commence à 3 caractères) : taper « Co » ne propose rien. L'application l'explique à l'utilisateur.
 - L'aspect des **emoji** dépend du système d'exploitation.
 - Testé avec **Node 24** uniquement ; la compatibilité avec Node 20 (version minimale annoncée par Next.js 16) n'a pas été essayée.
-- Vérifié avec **Chrome** (ordinateur et émulation d'un écran de 360 px) ; pas essayé sur un vrai téléphone ni avec un lecteur d'écran.
-- Les essais dans Chrome (parcours complet, pannes simulées, audit d'accessibilité) ont été faits pendant le développement avec des scripts qui ne sont **pas** versionnés ; leurs résultats sont dans les journaux de `docs/`. Seuls les 166 tests de `tests/` sont rejouables avec `npm test`.
+- Vérifié avec **Chrome** (ordinateur et émulation d'un écran de 360 px) ; pas essayé sur un vrai téléphone, ni avec un vrai GPS (la géolocalisation est vérifiée avec une position simulée), ni avec un lecteur d'écran.
+- « Ma position » affiche la météo de l'endroit où l'on se trouve, **même hors du Bénin** (la restriction au Bénin concerne les localités proposées par la recherche).
+- Les essais dans Chrome (parcours complet, pannes simulées, audit d'accessibilité) ont été faits pendant le développement avec des scripts qui ne sont **pas** versionnés ; leurs résultats sont dans les journaux de `docs/`. Seuls les 219 tests de `tests/` sont rejouables avec `npm test`.
 - Les prévisions en cas de limitation de l'API (HTTP 429) sont vérifiées par simulation, pas avec une vraie limitation.
 
 ## Crédits
