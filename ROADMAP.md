@@ -1,71 +1,57 @@
-# Feuille de route : [NOM DU PROJET]
+# Feuille de route : Météo des localités du Bénin
 
-[Une phrase : ce que fait l'application, framework, API ou données utilisées.]
-Légende : `[x]` fait et vérifié, `[ ]` à faire. Durée disponible : [à renseigner].
+Application web en français qui affiche la météo de n'importe quelle localité du Bénin, avec l'API publique Open-Meteo (sans clé). Next.js (App Router), TypeScript, Tailwind. Tout se passe dans le navigateur : aucun serveur à développer.
+Légende : `[x]` fait et vérifié, `[ ]` à faire.
 
 ## Règles de travail
-- Une phase suit ce cycle : **Generator** écrit `docs/phase-N-nom.md` -> **UI/UX + Integrator** codent selon ce document -> **Reviewer** vérifie, coche les tâches validées dans le document et ici, remplit le journal de review -> commit (voir `skills/`).
-- Seul le Reviewer coche des cases. Le document de phase et ce fichier doivent toujours être alignés.
-- Avant de clôturer une phase : build (types inclus), lint s'il existe, test s'il existe.
-- Le MVP (phases 0 à 3) passe avant tout bonus.
-- Documents de phase : dossier `docs/` (`docs/phase-0-fondations.md`, ...).
+- Cycle d'une phase : **Generator** écrit `docs/phase-N-nom.md` -> **UI/UX + Integrator** codent selon ce document -> **Reviewer** vérifie, coche les tâches validées ici et dans le document, remplit le journal -> commit (voir `skills/`).
+- Seul le Reviewer coche des cases, jamais sans preuve. Le document de phase et ce fichier restent alignés.
+- Avant de clôturer une phase : `npm run typecheck`, `npm run lint`, `npm run build`.
+- **Le socle d'abord** : un socle qui fonctionne et un README honnête valent mieux qu'une application complète qui ne démarre pas.
+- Un commit par fonctionnalité qui marche, poussé régulièrement.
 
 ---
 
-## Phase 0 : Fondations
-- [ ] Projet créé, dépôt git, premier commit
-- [ ] Types et couche d'accès aux données
-- [ ] Layout global : langue, titre, en-tête, pied de page
+## Phase 1 : Données et règles
+- [ ] Projet Next.js créé, dépôt git, premier commit
+- [ ] Types TypeScript (localité, météo actuelle, prévision journalière)
+- [ ] Accès à l'API (recherche de localités, prévisions) avec délai maximal et erreurs claires
+- [ ] Traduction des codes météo en français avec pictogramme
+- [ ] Formats : dates du Bénin en français, températures, vent, pluie
+- [ ] Règle « Vigilance pluie » (>= 20 mm ou >= 80 %)
+- [ ] Favoris : ajout sans doublon, retrait, conservation dans le navigateur
 
-## Phase 1 : Fonctionnalité principale (MVP)
-- [ ] [Liste ou écran principal, d'après le sujet]
-- [ ] Chargement et squelettes
-- [ ] Validation des paramètres d'URL, si le sujet a des filtres
+## Phase 2 : Socle fonctionnel
+- [ ] Recherche : champ, 2 caractères minimum, requête seulement quand on a fini de taper
+- [ ] Liste des résultats : nom, département, population si connue
+- [ ] Météo actuelle : température, ressentie, humidité, vent, description en français, pictogramme
+- [ ] Prévisions sur 7 jours : date en français, min, max, cumul et probabilité de pluie
+- [ ] Favoris : ajouter, retirer, retrouver en un clic, conservés après rechargement
+- [ ] États : chargement, aucun résultat, erreur avec « Réessayer »
 
-## Phase 2 : Interactions (MVP)
-- [ ] [Recherche / filtres / tri / pagination, selon le sujet]
-- [ ] État synchronisé avec l'URL
-- [ ] [...]
+## Phase 3 : Règles de gestion et finition
+- [ ] « Vigilance pluie » bien visible sur les jours concernés
+- [ ] Utilisable à 360 px de large, sans défilement horizontal
+- [ ] Jamais de page blanche ni de message technique
+- [ ] Accessibilité de base (labels, focus visible, contrastes)
 
-## Phase 3 : Détail ou second écran (MVP)
-- [ ] [Route de détail, ou formulaire, selon le sujet]
-- [ ] Retour à l'écran précédent qui conserve l'état
-- [ ] « Introuvable » si la ressource n'existe pas
+## Phase 4 : Livraison
+- [ ] README : installation, démarrage, choix techniques, ce qui fonctionne, ce qui manque et pourquoi
+- [ ] Nettoyage : pas de `console.log`, pas de fichiers inutiles
+- [ ] Démarrage vérifié sur un clone neuf en suivant le README
+- [ ] Dépôt en ligne, poussé
 
-## Phase 4 : Robustesse
-- [ ] Écran d'erreur avec « Réessayer »
-- [ ] Page « introuvable »
-- [ ] État « aucun résultat » avec action
-- [ ] Délai maximal des appels réseau
-
-## Phase 5 : Finition
-- [ ] Responsive vérifié à 375 / 768 / 1280 px
-- [ ] Accessibilité : labels, `alt`, focus visible, navigation clavier
-- [ ] Transitions et survols discrets
-
-## Phase 6 : Bonus (seulement si le temps le permet)
-1. [ ] [Favoris, thème, tests... selon le sujet]
-
-## Phase 7 : Livraison
-- [ ] README (modèle : `README.modele.md`)
-- [ ] Nettoyage : pas de `console.log`, pas de fichiers du gabarit inutilisés
-- [ ] Revue finale avec `skills/reviewer.md`
-- [ ] Test sur un clone neuf
-- [ ] Historique git propre
-- [ ] Démo préparée (modèle : `docs/_modele-demo.md`)
+## Phase 5 : Bonus (dans cet ordre, seulement si le temps le permet)
+1. [ ] Adresse partageable : la localité dans l'URL
+2. [ ] Navigation complète au clavier dans la liste des résultats
+3. [ ] Tests automatisés (traduction des codes météo, règle de vigilance)
+4. [ ] Bouton « Ma position »
+5. [ ] Graphique température et pluie sur 24 heures
+6. [ ] Mise en ligne
 
 ---
-
-## Répartition du temps (à adapter à la durée réelle)
-| Part | Contenu |
-|---|---|
-| 10 % | Lire le sujet, poser des questions, écrire cette feuille de route |
-| 10 % | Phase 0 : projet qui tourne |
-| 40 % | Phases 1 à 3 : le MVP |
-| 10 % | Phase 4 : états d'erreur et vides |
-| 5 % | Phase 5 : finition |
-| 15 % | Phase 7 : README, revue, démo |
-| 10 % | Réserve |
 
 ## Décisions techniques
-- [Une ligne par décision importante, avec la raison.]
+- **Tout côté navigateur** : composants client, appels directs à Open-Meteo.
+- **Peu d'appels** (l'API refuse au-delà d'une limite, code 429) : attente de fin de saisie, annulation des requêtes périmées, mémorisation des réponses.
+- **Aucune dépendance en plus** de Next et React (aucun accès réseau supplémentaire à prévoir).
