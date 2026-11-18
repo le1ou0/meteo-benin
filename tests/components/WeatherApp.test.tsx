@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError, fetchForecast, searchLocalities } from "@/lib/api";
 import { FAVORITES_KEY } from "@/lib/favorites";
+import { localityToQuery, parseLocalityQuery } from "@/lib/locality-url";
 import type { Forecast, Locality } from "@/types/weather";
 
 vi.mock("@/lib/api", async (importOriginal) => ({
@@ -57,6 +58,7 @@ const favoriteNames = () =>
 beforeEach(() => {
   vi.useFakeTimers();
   window.localStorage.clear();
+  window.history.replaceState(null, "", "/");
   searchMock.mockImplementation(async (query) => (/par/i.test(query) ? [parakou] : /cot/i.test(query) ? [cotonou] : []));
   forecastMock.mockImplementation(async (point) => forecast(point.latitude > 8 ? 31.6 : 28.2, 25));
 });
@@ -175,5 +177,112 @@ describe("WeatherApp : favoris", () => {
     await loadApp();
     expect(favoriteNames()).toEqual([]);
     expect(screen.getByText("Aucune localité favorite pour le moment.")).toBeTruthy();
+  });
+});
+
+describe("WeatherApp : adresse partageable", () => {
+  it("écrit la localité choisie dans l'adresse", async () => {
+    const { user, input } = await loadApp();
+    await pick(user, input, "Parakou", /Parakou/);
+    expect(parseLocalityQuery(window.location.search)).toEqual(parakou);
+  });
+
+  it("ouvrir l'adresse affiche directement la même localité, sans aucune recherche", async () => {
+    window.history.replaceState(null, "", localityToQuery(cotonou));
+    await loadApp();
+    await wait(0);
+
+    expect(screen.getByRole("heading", { level: 2, name: "Cotonou" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Prévisions sur 7 jours" })).toBeTruthy();
+    expect(searchMock).not.toHaveBeenCalled();
+    expect(forecastMock).toHaveBeenCalledExactlyOnceWith(cotonou, expect.any(AbortSignal));
+  });
+
+  it("une adresse invalide est ignorée : l'écran d'accueil s'affiche", async () => {
+    window.history.replaceState(null, "", "/?lieu=X&id=abc&lat=9&lon=2");
+    await loadApp();
+    expect(screen.getByText("Recherchez une localité ou choisissez un favori pour voir la météo.")).toBeTruthy();
+    expect(forecastMock).not.toHaveBeenCalled();
+  });
+
+  it("le bouton précédent du navigateur revient à la localité précédente", async () => {
+    const { user, input } = await loadApp();
+    await pick(user, input, "Parakou", /Parakou/);
+    const parakouUrl = window.location.search;
+    await pick(user, input, "Cotonou", /Cotonou/);
+    expect(screen.getByRole("heading", { level: 2, name: "Cotonou" })).toBeTruthy();
+
+    await act(async () => {
+      window.history.pushState(null, "", parakouUrl); // ce que fait le navigateur au retour arrière
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    await wait(0);
+    expect(screen.getByRole("heading", { level: 2, name: "Parakou" })).toBeTruthy();
+  });
+
+  it("choisir deux fois la même localité n'ajoute pas d'entrée d'historique", async () => {
+    const { user, input } = await loadApp();
+    await pick(user, input, "Parakou", /Parakou/);
+    const length = window.history.length;
+    await pick(user, input, "Parakou", /Parakou/);
+    expect(window.history.length).toBe(length);
+  });
+
+  it("un favori choisi met aussi à jour l'adresse", async () => {
+    window.localStorage.setItem(FAVORITES_KEY, JSON.stringify([parakou]));
+    const { user } = await loadApp();
+    await user.click(screen.getByRole("button", { name: "Parakou" }));
+    expect(parseLocalityQuery(window.location.search)).toEqual(parakou);
+  });
+});
+
+describe("WeatherApp : « Ma position »", () => {
+  const setGeolocation = (value: unknown) => Object.defineProperty(window.navigator, "geolocation", { value, configurable: true });
+  afterEach(() => setGeolocation(undefined));
+
+  it("affiche la météo de la position de l'utilisateur, sans bouton favori", async () => {
+    setGeolocation({ getCurrentPosition: (ok: PositionCallback) => ok({ coords: { latitude: 9.337164, longitude: 2.630311 } } as GeolocationPosition) });
+    const { user } = await loadApp();
+    await user.click(screen.getByRole("button", { name: /Ma position/ }));
+    await wait(0);
+
+    expect(screen.getByRole("heading", { level: 2, name: "Ma position" })).toBeTruthy();
+    expect(forecastMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ latitude: 9.34, longitude: 2.63 }), expect.any(AbortSignal));
+    expect(screen.queryByRole("button", { name: /favoris/ })).toBeNull();
+    expect(parseLocalityQuery(window.location.search)).toMatchObject({ id: 0, name: "Ma position", latitude: 9.34, longitude: 2.63 });
+  });
+
+  it("explique clairement un refus de géolocalisation, avec « Réessayer »", async () => {
+    setGeolocation({ getCurrentPosition: (_ok: PositionCallback, fail: PositionErrorCallback) => fail({ code: 1 } as GeolocationPositionError) });
+    const { user } = await loadApp();
+    await user.click(screen.getByRole("button", { name: /Ma position/ }));
+
+    expect(screen.getByRole("alert").textContent).toContain("Vous avez refusé la géolocalisation.");
+    expect(forecastMock).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Réessayer" })).toBeTruthy();
+  });
+
+  it("prévient quand le navigateur ne sait pas géolocaliser", async () => {
+    setGeolocation(undefined);
+    delete (window.navigator as unknown as Record<string, unknown>).geolocation;
+    const { user } = await loadApp();
+    await user.click(screen.getByRole("button", { name: /Ma position/ }));
+    expect(screen.getByRole("alert").textContent).toContain("ne permet pas la géolocalisation");
+  });
+
+  it("« Réessayer » relance la localisation et réussit", async () => {
+    const getCurrentPosition = vi.fn()
+      .mockImplementationOnce((_ok: PositionCallback, fail: PositionErrorCallback) => fail({ code: 3 } as GeolocationPositionError))
+      .mockImplementationOnce((ok: PositionCallback) => ok({ coords: { latitude: 6.36, longitude: 2.43 } } as GeolocationPosition));
+    setGeolocation({ getCurrentPosition });
+    const { user } = await loadApp();
+    await user.click(screen.getByRole("button", { name: /Ma position/ }));
+    expect(screen.getByRole("alert").textContent).toContain("trop de temps");
+
+    await user.click(screen.getByRole("button", { name: "Réessayer" }));
+    await wait(0);
+    expect(getCurrentPosition).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole("heading", { level: 2, name: "Ma position" })).toBeTruthy();
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 });

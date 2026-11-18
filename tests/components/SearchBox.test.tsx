@@ -241,3 +241,71 @@ describe("SearchBox : réponses dans le désordre", () => {
     expect(signals[1].aborted).toBe(false);
   });
 });
+
+describe("SearchBox : navigation au clavier dans la liste", () => {
+  const three: Locality[] = [parakou, abomey, hameau];
+  const focusedName = () => screen.getByRole("searchbox").ownerDocument.activeElement?.textContent ?? "";
+
+  async function openList() {
+    searchMock.mockResolvedValue(three);
+    const ctx = setup();
+    await ctx.user.type(ctx.input, "Pa");
+    await wait(400);
+    return ctx;
+  }
+
+  it("↓ depuis le champ place le focus sur le premier résultat", async () => {
+    const { user, input } = await openList();
+    input.focus();
+    await user.keyboard("{ArrowDown}");
+    expect(focusedName()).toContain("Parakou");
+  });
+
+  it("↓ et ↑ parcourent les résultats, sans sortir de la liste par le bas", async () => {
+    const { user, input } = await openList();
+    input.focus();
+    await user.keyboard("{ArrowDown}{ArrowDown}");
+    expect(focusedName()).toContain("Abomey");
+    await user.keyboard("{ArrowDown}{ArrowDown}{ArrowDown}");
+    expect(focusedName()).toContain("Petit hameau");
+    await user.keyboard("{ArrowUp}");
+    expect(focusedName()).toContain("Abomey");
+  });
+
+  it("↑ sur le premier résultat ramène au champ de recherche", async () => {
+    const { user, input } = await openList();
+    input.focus();
+    await user.keyboard("{ArrowDown}{ArrowUp}");
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("Échap ramène au champ depuis n'importe quel résultat", async () => {
+    const { user, input } = await openList();
+    input.focus();
+    await user.keyboard("{ArrowDown}{ArrowDown}{Escape}");
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("Début et Fin vont au premier et au dernier résultat", async () => {
+    const { user, input } = await openList();
+    input.focus();
+    await user.keyboard("{ArrowDown}{End}");
+    expect(focusedName()).toContain("Petit hameau");
+    await user.keyboard("{Home}");
+    expect(focusedName()).toContain("Parakou");
+  });
+
+  it("Entrée sur un résultat le choisit", async () => {
+    const { user, onSelect, input } = await openList();
+    input.focus();
+    await user.keyboard("{ArrowDown}{ArrowDown}{Enter}");
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith(abomey);
+  });
+
+  it("↓ ne fait rien (et ne bloque pas la saisie) quand il n'y a aucun résultat", async () => {
+    const { user, input } = setup();
+    input.focus();
+    await user.keyboard("{ArrowDown}");
+    expect(document.activeElement).toBe(input);
+  });
+});
