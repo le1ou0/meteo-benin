@@ -18,8 +18,9 @@ Les données viennent de l'API publique [Open-Meteo](https://open-meteo.com/) (s
 **Bonus réalisés**
 - **Adresse partageable** : la localité affichée apparaît dans l'adresse (`?lieu=Parakou&id=…&lat=…&lon=…`) ; ouvrir cette adresse affiche directement la même localité, sans nouvelle recherche. Recharger la page et les boutons précédent et suivant du navigateur fonctionnent.
 - **Navigation au clavier dans la liste des résultats** : `↓` depuis le champ ouvre la liste, `↑` `↓` `Début` `Fin` la parcourent, `Échap` revient au champ, `Entrée` choisit.
+- **Graphique heure par heure sur 24 heures** : courbe de température et barres de pluie pour les prochaines 24 heures (heure du Bénin), avec une légende, un résumé en texte et un tableau de données pour les lecteurs d'écran. Les heures sont demandées dans la **même requête** que les prévisions (aucun appel de plus) ; si l'API ne les fournit pas, seul le graphique disparaît.
 - **Bouton « Ma position »** : affiche la météo de l'endroit où se trouve l'utilisateur, avec un message clair s'il refuse la géolocalisation (et un bouton « Réessayer »).
-- **Tests automatisés** (219 tests) : traduction des codes météo, règle de vigilance, formats, favoris, adresse partageable, géolocalisation, accès à l'API, et comportement des composants.
+- **Tests automatisés** (238 tests) : traduction des codes météo, règle de vigilance, formats, favoris, adresse partageable, géolocalisation, accès à l'API (dont les heures), graphique et comportement des composants.
 
 ## Prérequis
 - Node.js 20.9 ou plus récent, et npm.
@@ -41,7 +42,7 @@ Aucune configuration ni clé d'API n'est nécessaire.
 ## Vérifications
 | Commande | Rôle |
 |---|---|
-| `npm test` | lance les 219 tests (Vitest, sans accès au réseau) |
+| `npm test` | lance les 238 tests (Vitest, sans accès au réseau) |
 | `npm run typecheck` | vérifie les types TypeScript |
 | `npm run lint` | ESLint |
 | `npm run build` | build de production |
@@ -76,9 +77,8 @@ ROADMAP.md        feuille de route et avancement
 Le projet a été développé avec un assistant IA (Claude), par phases : pour chaque phase, un document écrit **avant** le code (`docs/phase-N-*.md`) fixe les tâches et les critères de validation, puis le code est écrit, puis chaque critère est vérifié (commandes, tests, essais dans Chrome) et consigné dans le journal du document. Seules les cases réellement vérifiées sont cochées dans [`ROADMAP.md`](ROADMAP.md).
 
 ## Ce qui manque, et pourquoi
-Le socle, les règles de gestion et la plupart des bonus ont été traités ; ces éléments facultatifs n'ont **pas** été réalisés :
-- **Graphique heure par heure sur 24 heures** : non fait faute de temps. L'API le permet (`hourly` avec `forecast_hours=24`).
-- **Mise en ligne** : non faite faute de temps.
+Le socle, les règles de gestion et la plupart des bonus ont été traités ; un seul élément facultatif n'a **pas** été réalisé :
+- **Mise en ligne** : non faite faute de temps. L'application se démarre en local en suivant ce README.
 
 ## Limites connues
 - Avec **2 caractères**, l'API de géocodage ne renvoie que des correspondances **exactes** (la recherche approchée commence à 3 caractères) : taper « Co » ne propose rien. L'application l'explique à l'utilisateur.
@@ -86,7 +86,7 @@ Le socle, les règles de gestion et la plupart des bonus ont été traités ; ce
 - Testé avec **Node 24** uniquement ; la compatibilité avec Node 20 (version minimale annoncée par Next.js 16) n'a pas été essayée.
 - Vérifié avec **Chrome** (ordinateur et émulation d'un écran de 360 px) ; pas essayé sur un vrai téléphone, ni avec un vrai GPS (la géolocalisation est vérifiée avec une position simulée), ni avec un lecteur d'écran.
 - « Ma position » affiche la météo de l'endroit où l'on se trouve, **même hors du Bénin** (la restriction au Bénin concerne les localités proposées par la recherche).
-- Les essais dans Chrome (parcours complet, pannes simulées, audit d'accessibilité) ont été faits pendant le développement avec des scripts qui ne sont **pas** versionnés ; leurs résultats sont dans les journaux de `docs/`. Seuls les 219 tests de `tests/` sont rejouables avec `npm test`.
+- Les essais dans Chrome (parcours complet, pannes simulées, audit d'accessibilité) ont été faits pendant le développement avec des scripts qui ne sont **pas** versionnés ; leurs résultats sont dans les journaux de `docs/`. Seuls les 238 tests de `tests/` sont rejouables avec `npm test`.
 - Les prévisions en cas de limitation de l'API (HTTP 429) sont vérifiées par simulation, pas avec une vraie limitation.
 
 ## Crédits
