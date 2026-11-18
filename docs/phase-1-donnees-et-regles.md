@@ -1,6 +1,6 @@
 # Phase 1 : Données et règles
 
-Rédigé par : Generator · Date : 2026-11-18 · Statut : **en cours**
+Rédigé par : Generator · Date : 2026-11-18 · Statut : **terminée**
 
 ## Objectif
 Poser la couche données et les règles métier, testables sans interface : appels à l'API, traduction des codes météo, formats d'affichage, règle de vigilance et gestion des favoris. Les écrans des phases suivantes ne feront qu'afficher ce que ces modules calculent.
@@ -32,13 +32,13 @@ Poser la couche données et les règles métier, testables sans interface : appe
 - **Pictogrammes en emoji**, accompagnés du texte (jamais seuls) : pas de dépendance, lisibles par les lecteurs d'écran avec `aria-hidden` sur l'emoji.
 
 ## Tâches
-- [ ] Projet Next.js créé, dépôt git, premier commit
-- [ ] Types TypeScript (localité, météo actuelle, prévision journalière)
-- [ ] Accès à l'API (recherche de localités, prévisions) avec délai maximal et erreurs claires
-- [ ] Traduction des codes météo en français avec pictogramme
-- [ ] Formats : dates du Bénin en français, températures, vent, pluie
-- [ ] Règle « Vigilance pluie » (>= 20 mm ou >= 80 %)
-- [ ] Favoris : ajout sans doublon, retrait, conservation dans le navigateur
+- [x] Projet Next.js créé, dépôt git, premier commit
+- [x] Types TypeScript (localité, météo actuelle, prévision journalière)
+- [x] Accès à l'API (recherche de localités, prévisions) avec délai maximal et erreurs claires
+- [x] Traduction des codes météo en français avec pictogramme
+- [x] Formats : dates du Bénin en français, températures, vent, pluie
+- [x] Règle « Vigilance pluie » (>= 20 mm ou >= 80 %)
+- [x] Favoris : ajout sans doublon, retrait, conservation dans le navigateur
 
 ## Fichiers
 | Fichier | Rôle |
@@ -76,16 +76,38 @@ Tout écran et tout composant (phase 2) · bonus.
 
 ## Critères de validation
 Vérifiés par un script Node (modules purs) et par des appels réels à l'API.
-- [ ] `isRainAlert` : 19,9 mm / 79 % = non ; 20 mm = oui ; 80 % = oui ; 0 mm / `null` = non
-- [ ] `describeWeather(63).label` = « Pluie modérée » ; tous les codes listés ont un libellé non vide ; un code inconnu ne plante pas
-- [ ] `formatDayLabel('2026-11-18')` = `mer. 18 nov.` avec `TZ=America/Los_Angeles` et avec `TZ=Pacific/Kiritimati`
-- [ ] Températures arrondies (`31,8` donne `32 °C`), pluie `12,34` donne `12,3 mm`, vent entier
-- [ ] `addFavorite` deux fois la même localité = 1 seule entrée ; `removeFavorite` la retire
-- [ ] `loadFavorites` avec contenu corrompu ou stockage indisponible = liste vide, sans exception
-- [ ] `searchLocalities('Parakou')` renvoie Parakou avec département « Borgou » et population ; ne renvoie aucun aéroport ; `searchLocalities('P')` = `[]` sans appel réseau ; `searchLocalities('zzzzqq')` = `[]`
-- [ ] `fetchForecast` (Parakou) renvoie 7 jours et un `current` complet
-- [ ] Une requête annulée n'est pas une erreur ; un 429 ou un délai dépassé donne le bon `kind`
-- [ ] `npm run typecheck`, `npm run lint` et `npm run build` passent
+- [x] `isRainAlert` : 19,9 mm / 79 % = non ; 20 mm = oui ; 80 % = oui ; 0 mm / `null` = non
+- [x] `describeWeather(63).label` = « Pluie modérée » ; tous les codes listés ont un libellé non vide ; un code inconnu ne plante pas
+- [x] `formatDayLabel('2026-11-18')` = `mer. 18 nov.` avec `TZ=America/Los_Angeles` et avec `TZ=Pacific/Kiritimati`
+- [x] Températures arrondies (`31,8` donne `32 °C`), pluie `12,34` donne `12,3 mm`, vent entier
+- [x] `addFavorite` deux fois la même localité = 1 seule entrée ; `removeFavorite` la retire
+- [x] `loadFavorites` avec contenu corrompu ou stockage indisponible = liste vide, sans exception
+- [x] `searchLocalities('Parakou')` renvoie Parakou avec département « Borgou » et population ; ne renvoie aucun aéroport ; `searchLocalities('P')` = `[]` sans appel réseau ; `searchLocalities('zzzzqq')` = `[]`
+- [x] `fetchForecast` (Parakou) renvoie 7 jours et un `current` complet
+- [x] Une requête annulée n'est pas une erreur ; un 429 ou un délai dépassé donne le bon `kind`
+- [x] `npm run typecheck`, `npm run lint` et `npm run build` passent
 
 ## Journal de review
-*(rempli par le Reviewer)*
+**Reviewer · 2026-11-18**
+
+Commandes : `npm run typecheck` OK · `npm run lint` OK · `npm run build` OK.
+Vérification : script Node qui importe directement les modules TypeScript (aucune bibliothèque de test), avec **appels réels à l'API** et simulations d'erreurs. **46 vérifications sur 46** réussies, plus 2 vérifications du délai maximal et de l'annulation en cours de route.
+
+**Preuves**
+- Vigilance : 19,9 mm / 79 % = non ; 20 mm = oui ; 80 % = oui ; 0 mm / `null` = non ; 5 mm / 95 % = oui.
+- Codes météo : code 63 = « Pluie modérée » ; les 28 codes WMO prévus ont un libellé et un pictogramme ; un code inconnu (1234, -1) ne plante pas ; pictogramme de nuit pour le code 0.
+- Formats : `formatDayLabel('2026-11-18')` = `mer. 18 nov.` avec `TZ` = America/Los_Angeles, Pacific/Kiritimati, UTC et Asia/Tokyo (identique) ; `31,8` -> `32 °C` ; `12,34` -> `12,3 mm` ; `7,6` -> `8 km/h` ; `255478` -> `255 478 hab.` ; `null` -> `—`.
+- Favoris : ajouter deux fois la même localité = 1 entrée ; ordre conservé ; retrait ; relecture identique ; JSON corrompu, valeurs invalides et stockage qui lève une exception = liste vide sans plantage ; doublons du stockage retirés.
+- API réelle : « Parakou » = département Borgou, population 255 478, coordonnées correctes, **aucun aéroport** ; « P » et texte vide = `[]` **sans appel réseau** ; « zzzzqq » (clé `results` absente) = `[]` ; « Cot » = Cotonou (Littoral, 679 012) ; « Co » (2 caractères, correspondance exacte seulement) = `[]` sans erreur ; prévisions de Parakou = 7 jours, `current` complet et typé, `max >= min` chaque jour.
+- Mémorisation : « Parakou » redemandé (casse et espaces différents) = 0 nouvel appel ; prévisions redemandées = 0 nouvelle requête.
+- Erreurs : HTTP 429 = `rate-limit` ; HTTP 500 = `http` ; panne réseau = `network` ; réponse illisible ou sans `current`/`daily` = `ApiError` (pas de `TypeError`) ; API muette = `timeout` après **8,0 s** ; annulation volontaire (avant et pendant l'attente) = `AbortError`, **pas** une `ApiError`. Tous les messages sont en français et sans détail technique.
+
+**Remarques**
+- **Mineur (test, pas l'application)** : `AbortSignal.timeout` n'empêche pas Node de se terminer ; mon premier script s'arrêtait avant les 8 secondes. Dans un navigateur, la page garde la boucle en vie. Corrigé dans le script de test.
+- **À savoir pour l'interface** : avec 2 caractères, l'API ne renvoie que des correspondances **exactes** (« Co » = aucun résultat) ; l'écran affichera donc « aucune localité » à 2 caractères la plupart du temps. C'est le comportement de l'API, pas un défaut.
+
+**Non vérifié**
+- Aucun écran n'existe encore (phase 2) : l'affichage n'est pas vérifié.
+- `localStorage` réel d'un navigateur : simulé avec un faux stockage (le comportement en navigateur sera vérifié en phase 2).
+- Les scripts de vérification ne sont pas dans le dépôt (les tests automatisés sont un bonus de la phase 5).
+

@@ -13,13 +13,13 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
 ---
 
 ## Phase 1 : Données et règles
-- [ ] Projet Next.js créé, dépôt git, premier commit
-- [ ] Types TypeScript (localité, météo actuelle, prévision journalière)
-- [ ] Accès à l'API (recherche de localités, prévisions) avec délai maximal et erreurs claires
-- [ ] Traduction des codes météo en français avec pictogramme
-- [ ] Formats : dates du Bénin en français, températures, vent, pluie
-- [ ] Règle « Vigilance pluie » (>= 20 mm ou >= 80 %)
-- [ ] Favoris : ajout sans doublon, retrait, conservation dans le navigateur
+- [x] Projet Next.js créé, dépôt git, premier commit
+- [x] Types TypeScript (localité, météo actuelle, prévision journalière)
+- [x] Accès à l'API (recherche de localités, prévisions) avec délai maximal et erreurs claires
+- [x] Traduction des codes météo en français avec pictogramme
+- [x] Formats : dates du Bénin en français, températures, vent, pluie
+- [x] Règle « Vigilance pluie » (>= 20 mm ou >= 80 %)
+- [x] Favoris : ajout sans doublon, retrait, conservation dans le navigateur
 
 ## Phase 2 : Socle fonctionnel
 - [ ] Recherche : champ, 2 caractères minimum, requête seulement quand on a fini de taper
