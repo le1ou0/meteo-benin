@@ -5,6 +5,7 @@ import { ForecastList } from "@/components/ForecastList";
 import { StatusMessage } from "@/components/StatusMessage";
 import { useForecast } from "@/hooks/useForecast";
 import { formatPopulation } from "@/lib/format";
+import { MY_POSITION_ID } from "@/lib/locality-url";
 import type { Locality } from "@/types/weather";
 
 interface WeatherPanelProps {
@@ -47,19 +48,21 @@ export function WeatherPanel({ locality, isFavorite, onToggleFavorite }: Weather
           </h2>
           {details && <p className="text-sm text-zinc-600 dark:text-zinc-400">{details}</p>}
         </div>
-        <button
-          type="button"
-          onClick={onToggleFavorite}
-          aria-pressed={isFavorite}
-          className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 ${
-            isFavorite
-              ? "border-amber-500 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-100"
-              : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
-          }`}
-        >
-          <span aria-hidden="true">{isFavorite ? "★" : "☆"}</span>
-          {isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-        </button>
+        {locality.id !== MY_POSITION_ID && (
+          <button
+            type="button"
+            onClick={onToggleFavorite}
+            aria-pressed={isFavorite}
+            className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-4 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 ${
+              isFavorite
+                ? "border-amber-500 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-100"
+                : "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            }`}
+          >
+            <span aria-hidden="true">{isFavorite ? "★" : "☆"}</span>
+            {isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+          </button>
+        )}
       </div>
 
       {(state.status === "loading" || state.status === "idle") && <Skeleton />}

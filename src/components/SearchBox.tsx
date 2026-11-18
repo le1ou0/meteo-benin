@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { StatusMessage } from "@/components/StatusMessage";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { MIN_QUERY_LENGTH, searchLocalities } from "@/lib/api";
@@ -19,6 +19,8 @@ interface SearchBoxProps {
 
 export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
   const inputId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const helpId = useId();
   const [text, setText] = useState("");
   const [chosen, setChosen] = useState<string | null>(null); // texte posé par un choix : pas de nouvelle recherche
@@ -50,6 +52,34 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
   const current = isSearching && outcome?.key === searchKey ? outcome : null;
   const showLoading = isTyping || (isSearching && current === null);
 
+  // Clavier : ↓ depuis le champ ouvre la liste, ↑ ↓ Début Fin la parcourent, ↑ sur le premier ou Échap revient au champ.
+  function onInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "ArrowDown") return;
+    const first = listRef.current?.querySelector("button");
+    if (first) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function onListKeyDown(event: KeyboardEvent<HTMLUListElement>) {
+    const buttons = Array.from(listRef.current?.querySelectorAll("button") ?? []);
+    const index = buttons.findIndex((button) => button === document.activeElement);
+    const moves: Record<string, number> = {
+      ArrowDown: Math.min(index + 1, buttons.length - 1),
+      ArrowUp: index - 1,
+      Home: 0,
+      End: buttons.length - 1,
+    };
+    if (event.key === "Escape" || (event.key === "ArrowUp" && index <= 0)) {
+      event.preventDefault();
+      inputRef.current?.focus();
+    } else if (event.key in moves) {
+      event.preventDefault();
+      buttons[moves[event.key]]?.focus();
+    }
+  }
+
   function choose(locality: Locality) {
     setChosen(locality.name);
     setText(locality.name);
@@ -63,6 +93,8 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
       </label>
       <input
         id={inputId}
+        ref={inputRef}
+        onKeyDown={onInputKeyDown}
         type="search"
         value={text}
         onChange={(event) => {
@@ -100,7 +132,10 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
           />
         )}
         {!showLoading && current && "results" in current && current.results.length > 0 && (
-          <ul className="divide-y divide-zinc-200 overflow-hidden rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+          <ul
+            ref={listRef}
+            onKeyDown={onListKeyDown}
+            className="divide-y divide-zinc-200 overflow-hidden rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
             {current.results.map((locality) => {
               const details = [locality.department, formatPopulation(locality.population)]
                 .filter(Boolean)

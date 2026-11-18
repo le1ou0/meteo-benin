@@ -10,17 +10,17 @@ export default function Home() {
         </p>
       </header>
       <WeatherApp />
-      <footer className="mt-10 border-t border-zinc-200 pt-4 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
-        Données météo :{" "}
+      <footer className="mt-10 flex flex-wrap items-center gap-x-1 border-t border-zinc-200 pt-4 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+        <span>Données météo :</span>
         <a
           href="https://open-meteo.com/"
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded underline underline-offset-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          className="inline-flex min-h-11 items-center rounded underline underline-offset-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
         >
           Open-Meteo.com
-        </a>{" "}
-        (licence CC BY 4.0).
+        </a>
+        <span>(licence CC BY 4.0).</span>
       </footer>
     </main>
   );
