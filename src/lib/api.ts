@@ -67,6 +67,8 @@ interface RawLocality {
   feature_code?: string;
 }
 
+const isNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
+
 const searchCache = new Map<string, Locality[]>();
 
 /** Localités du Bénin correspondant au texte. `[]` sans appel sous 2 caractères. */
@@ -147,8 +149,25 @@ export async function fetchForecast(
   );
 
   const { current, daily } = raw;
-  if (!current || !daily?.time) {
-    throw new ApiError("http", "Le service météo a renvoyé une réponse inattendue.");
+  const unexpected = () => new ApiError("http", "Le service météo a renvoyé une réponse inattendue.");
+  if (!current || !daily?.time) throw unexpected();
+
+  // Une valeur manquante ne doit jamais s'afficher sous la forme « NaN » ou « undefined ».
+  const currentNumbers = [
+    current.temperature_2m,
+    current.apparent_temperature,
+    current.relative_humidity_2m,
+    current.wind_speed_10m,
+    current.weather_code,
+    current.is_day,
+  ];
+  const days = daily.time.length;
+  const series = [daily.weather_code, daily.temperature_2m_max, daily.temperature_2m_min, daily.precipitation_sum];
+  const hasValidSeries = series.every(
+    (values) => Array.isArray(values) && values.length >= days && values.slice(0, days).every(isNumber),
+  );
+  if (typeof current.time !== "string" || !currentNumbers.every(isNumber) || days === 0 || !hasValidSeries) {
+    throw unexpected();
   }
 
   const currentWeather: CurrentWeather = {
@@ -160,7 +179,7 @@ export async function fetchForecast(
     weatherCode: current.weather_code,
     isDay: current.is_day === 1,
   };
-  const days = daily.time.map<DailyForecast>((date, index) => ({
+  const dailyForecasts = daily.time.map<DailyForecast>((date, index) => ({
     date,
     weatherCode: daily.weather_code[index],
     temperatureMax: daily.temperature_2m_max[index],
@@ -169,7 +188,7 @@ export async function fetchForecast(
     precipitationProbability: daily.precipitation_probability_max?.[index] ?? null,
   }));
 
-  const data: Forecast = { current: currentWeather, daily: days };
+  const data: Forecast = { current: currentWeather, daily: dailyForecasts };
   forecastCache.set(key, { at: Date.now(), data });
   return data;
 }

@@ -71,6 +71,7 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
         }}
         placeholder="Ex. : Parakou, Cotonou…"
         autoComplete="off"
+        spellCheck={false}
         aria-describedby={helpId}
         className="mt-1 h-12 w-full rounded-lg border border-zinc-300 bg-white px-4 text-base text-zinc-900 outline-none placeholder:text-zinc-500 focus-visible:ring-2 focus-visible:ring-blue-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
       />

@@ -31,9 +31,9 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
 - [x] États : chargement, aucun résultat, erreur avec « Réessayer »
 
 ## Phase 3 : Finition et vérification mobile
-- [ ] Utilisable à 360 px de large, sans défilement horizontal
-- [ ] Jamais de page blanche ni de message technique
-- [ ] Accessibilité de base (labels, focus visible, contrastes)
+- [x] Utilisable à 360 px de large, sans défilement horizontal
+- [x] Jamais de page blanche ni de message technique
+- [x] Accessibilité de base (labels, focus visible, contrastes)
 
 ## Phase 4 : Livraison
 - [ ] README : installation, démarrage, choix techniques, ce qui fonctionne, ce qui manque et pourquoi
