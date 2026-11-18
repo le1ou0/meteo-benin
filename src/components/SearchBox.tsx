@@ -28,7 +28,8 @@ export function SearchBox({ onSelect, isFavorite }: SearchBoxProps) {
   const trimmed = text.trim();
   const debounced = useDebouncedValue(trimmed, SEARCH_DELAY_MS);
   const isTyping = trimmed.length >= MIN_QUERY_LENGTH && trimmed !== debounced && trimmed !== chosen;
-  const isSearching = debounced.length >= MIN_QUERY_LENGTH && debounced !== chosen;
+  // Après un choix, la liste disparaît tout de suite (sans attendre la fin de l'anti-rebond).
+  const isSearching = debounced.length >= MIN_QUERY_LENGTH && trimmed !== chosen && debounced !== chosen;
   const searchKey = `${debounced}:${attempt}`;
 
   useEffect(() => {
