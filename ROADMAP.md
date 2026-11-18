@@ -36,9 +36,9 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
 - [x] Accessibilité de base (labels, focus visible, contrastes)
 
 ## Phase 4 : Livraison
-- [ ] README : installation, démarrage, choix techniques, ce qui fonctionne, ce qui manque et pourquoi
-- [ ] Nettoyage : pas de `console.log`, pas de fichiers inutiles
-- [ ] Démarrage vérifié sur un clone neuf en suivant le README
+- [x] README : installation, démarrage, choix techniques, ce qui fonctionne, ce qui manque et pourquoi
+- [x] Nettoyage : pas de `console.log`, pas de fichiers inutiles
+- [x] Démarrage vérifié sur un clone neuf en suivant le README
 - [ ] Dépôt en ligne, poussé
 
 ## Phase 5 : Bonus (dans cet ordre, seulement si le temps le permet)
