@@ -2,6 +2,7 @@
 
 import { CurrentWeatherCard } from "@/components/CurrentWeatherCard";
 import { ForecastList } from "@/components/ForecastList";
+import { HourlyChart } from "@/components/HourlyChart";
 import { StatusMessage } from "@/components/StatusMessage";
 import { useForecast } from "@/hooks/useForecast";
 import { formatPopulation } from "@/lib/format";
@@ -72,6 +73,7 @@ export function WeatherPanel({ locality, isFavorite, onToggleFavorite }: Weather
       {state.status === "success" && (
         <>
           <CurrentWeatherCard current={state.data.current} />
+          <HourlyChart points={state.data.hourly} />
           <ForecastList days={state.data.daily} />
         </>
       )}

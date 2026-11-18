@@ -32,7 +32,17 @@ export interface DailyForecast {
   precipitationProbability: number | null;
 }
 
+export interface HourlyPoint {
+  /** Heure locale du Bénin, sans décalage (ex. `2026-11-18T17:00`). */
+  time: string;
+  temperature: number;
+  /** mm */
+  precipitation: number;
+}
+
 export interface Forecast {
   current: CurrentWeather;
   daily: DailyForecast[];
+  /** Prochaines 24 heures ; vide si l'API ne les fournit pas (le graphique est alors masqué). */
+  hourly: HourlyPoint[];
 }

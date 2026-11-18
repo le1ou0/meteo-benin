@@ -1,4 +1,4 @@
-import type { CurrentWeather, DailyForecast, Forecast, Locality } from "../types/weather";
+import type { CurrentWeather, DailyForecast, Forecast, HourlyPoint, Locality } from "../types/weather";
 
 const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
 const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
@@ -122,6 +122,25 @@ interface RawForecast {
     precipitation_sum: number[];
     precipitation_probability_max?: Array<number | null>;
   };
+  hourly?: {
+    time?: string[];
+    temperature_2m?: Array<number | null>;
+    precipitation?: Array<number | null>;
+  };
+}
+
+/** Données horaires : facultatives. Un point invalide est ignoré ; sans données, le graphique est masqué. */
+function parseHourly(raw: RawForecast["hourly"]): HourlyPoint[] {
+  if (!raw || !Array.isArray(raw.time) || !Array.isArray(raw.temperature_2m) || !Array.isArray(raw.precipitation)) return [];
+  const points: HourlyPoint[] = [];
+  raw.time.forEach((time, index) => {
+    const temperature = raw.temperature_2m?.[index];
+    const precipitation = raw.precipitation?.[index];
+    if (typeof time === "string" && isNumber(temperature) && isNumber(precipitation)) {
+      points.push({ time, temperature, precipitation });
+    }
+  });
+  return points;
 }
 
 const forecastCache = new Map<string, { at: number; data: Forecast }>();
@@ -142,6 +161,8 @@ export async function fetchForecast(
       longitude: point.longitude,
       current: "temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day",
       daily: "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max",
+      hourly: "temperature_2m,precipitation",
+      forecast_hours: 24,
       timezone: TIME_ZONE,
       forecast_days: 7,
     },
@@ -188,7 +209,7 @@ export async function fetchForecast(
     precipitationProbability: daily.precipitation_probability_max?.[index] ?? null,
   }));
 
-  const data: Forecast = { current: currentWeather, daily: dailyForecasts };
+  const data: Forecast = { current: currentWeather, daily: dailyForecasts, hourly: parseHourly(raw.hourly) };
   forecastCache.set(key, { at: Date.now(), data });
   return data;
 }
