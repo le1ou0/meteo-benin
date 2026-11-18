@@ -39,7 +39,7 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
 - [x] README : installation, démarrage, choix techniques, ce qui fonctionne, ce qui manque et pourquoi
 - [x] Nettoyage : pas de `console.log`, pas de fichiers inutiles
 - [x] Démarrage vérifié sur un clone neuf en suivant le README
-- [ ] Dépôt en ligne, poussé
+- [x] Dépôt en ligne, poussé
 
 ## Phase 5 : Bonus (dans cet ordre, seulement si le temps le permet)
 1. [x] Adresse partageable : la localité dans l'URL
@@ -47,7 +47,7 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
 3. [x] Tests automatisés : unitaires (codes météo, vigilance, formats, favoris, accès API) et de composants
 4. [x] Bouton « Ma position »
 5. [x] Graphique température et pluie sur 24 heures
-6. [ ] Mise en ligne
+6. [x] Mise en ligne
 
 ---
 

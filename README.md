@@ -2,6 +2,8 @@
 
 Application web, en français, qui affiche la météo de n'importe quelle localité du Bénin : conditions actuelles, prévisions sur 7 jours, **vigilance pluie** et localités favorites. Elle est pensée pour les agents des préfectures, des mairies et de la protection civile, qui doivent anticiper les fortes pluies.
 
+**Application en ligne : https://meteo-benin.vercel.app**
+
 Les données viennent de l'API publique [Open-Meteo](https://open-meteo.com/) (sans clé). **Aucun serveur n'est développé** : l'application appelle l'API directement depuis le navigateur.
 
 ## Ce qui fonctionne
@@ -20,6 +22,7 @@ Les données viennent de l'API publique [Open-Meteo](https://open-meteo.com/) (s
 - **Navigation au clavier dans la liste des résultats** : `↓` depuis le champ ouvre la liste, `↑` `↓` `Début` `Fin` la parcourent, `Échap` revient au champ, `Entrée` choisit.
 - **Graphique heure par heure sur 24 heures** : courbe de température et barres de pluie pour les prochaines 24 heures (heure du Bénin), avec une légende, un résumé en texte et un tableau de données pour les lecteurs d'écran. Les heures sont demandées dans la **même requête** que les prévisions (aucun appel de plus) ; si l'API ne les fournit pas, seul le graphique disparaît.
 - **Bouton « Ma position »** : affiche la météo de l'endroit où se trouve l'utilisateur, avec un message clair s'il refuse la géolocalisation (et un bouton « Réessayer »).
+- **Mise en ligne** : l'application est déployée sur Vercel (https://meteo-benin.vercel.app), sans aucune configuration ni variable d'environnement.
 - **Tests automatisés** (238 tests) : traduction des codes météo, règle de vigilance, formats, favoris, adresse partageable, géolocalisation, accès à l'API (dont les heures), graphique et comportement des composants.
 
 ## Prérequis
@@ -77,8 +80,7 @@ ROADMAP.md        feuille de route et avancement
 Le projet a été développé avec un assistant IA (Claude), par phases : pour chaque phase, un document écrit **avant** le code (`docs/phase-N-*.md`) fixe les tâches et les critères de validation, puis le code est écrit, puis chaque critère est vérifié (commandes, tests, essais dans Chrome) et consigné dans le journal du document. Seules les cases réellement vérifiées sont cochées dans [`ROADMAP.md`](ROADMAP.md).
 
 ## Ce qui manque, et pourquoi
-Le socle, les règles de gestion et la plupart des bonus ont été traités ; un seul élément facultatif n'a **pas** été réalisé :
-- **Mise en ligne** : non faite faute de temps. L'application se démarre en local en suivant ce README.
+Aucun élément demandé par le sujet n'a été laissé de côté : le socle, les règles de gestion et tous les bonus sont réalisés. Ce qui n'a **pas pu être vérifié** est détaillé dans « Limites connues » (vrai téléphone, lecteur d'écran, autres navigateurs, Node 20).
 
 ## Limites connues
 - Avec **2 caractères**, l'API de géocodage ne renvoie que des correspondances **exactes** (la recherche approchée commence à 3 caractères) : taper « Co » ne propose rien. L'application l'explique à l'utilisateur.
@@ -86,6 +88,7 @@ Le socle, les règles de gestion et la plupart des bonus ont été traités ; un
 - Testé avec **Node 24** uniquement ; la compatibilité avec Node 20 (version minimale annoncée par Next.js 16) n'a pas été essayée.
 - Vérifié avec **Chrome** (ordinateur et émulation d'un écran de 360 px) ; pas essayé sur un vrai téléphone, ni avec un vrai GPS (la géolocalisation est vérifiée avec une position simulée), ni avec un lecteur d'écran.
 - « Ma position » affiche la météo de l'endroit où l'on se trouve, **même hors du Bénin** (la restriction au Bénin concerne les localités proposées par la recherche).
+- Le déploiement est vérifié avec un parcours réel dans Chrome (recherche, 7 jours, graphique, adresse partagée) sur l'adresse en ligne.
 - Les essais dans Chrome (parcours complet, pannes simulées, audit d'accessibilité) ont été faits pendant le développement avec des scripts qui ne sont **pas** versionnés ; leurs résultats sont dans les journaux de `docs/`. Seuls les 238 tests de `tests/` sont rejouables avec `npm test`.
 - Les prévisions en cas de limitation de l'API (HTTP 429) sont vérifiées par simulation, pas avec une vraie limitation.
 

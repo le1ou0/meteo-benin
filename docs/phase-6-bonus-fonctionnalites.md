@@ -5,7 +5,7 @@ Rédigé par : Generator · Date : 2026-11-18 · Statut : **terminée**
 > Ce document a été rédigé pendant la phase, après le code (contrainte de temps), et non avant comme les phases 1 à 3.
 
 ## Objectif
-Compléter le socle avec quatre fonctionnalités facultatives : une adresse partageable, la navigation au clavier dans la liste des résultats, un bouton « Ma position » et un graphique heure par heure sur 24 heures.
+Compléter le socle avec quatre fonctionnalités facultatives (une adresse partageable, la navigation au clavier dans la liste des résultats, un bouton « Ma position », un graphique heure par heure sur 24 heures) et la mise en ligne.
 
 ## Décisions
 - **L'adresse est la source de vérité de la localité affichée** (`?lieu=Parakou&id=2392204&lat=9.33716&lon=2.63031&dep=Borgou&pop=255478`) : ouvrir l'adresse affiche directement la même localité, **sans nouvelle recherche** ; recharger la page, les boutons précédent et suivant fonctionnent. L'adresse est relue avec validation stricte (identifiant entier positif, coordonnées dans leurs limites, textes de 80 caractères au plus) : une adresse invalide donne l'écran d'accueil, jamais une erreur.
@@ -19,6 +19,7 @@ Compléter le socle avec quatre fonctionnalités facultatives : une adresse part
 - [x] Navigation complète au clavier dans la liste des résultats
 - [x] Bouton « Ma position »
 - [x] Graphique de la température et de la pluie heure par heure sur 24 heures
+- [x] Mise en ligne de l'application
 
 ## Fichiers
 `src/lib/locality-url.ts`, `src/lib/geolocation.ts`, `src/hooks/useSelectedLocality.ts`, `src/components/MyLocationButton.tsx`, `src/components/WeatherApp.tsx`, `src/components/WeatherPanel.tsx`, `src/components/SearchBox.tsx`, `src/components/HourlyChart.tsx`, `src/lib/api.ts`, `src/types/weather.ts`.
@@ -53,7 +54,8 @@ Vérification dans Chrome (API simulée, géolocalisation accordée puis refusé
 - **À savoir** : « Ma position » affiche la météo de l'endroit où se trouve l'utilisateur, **même hors du Bénin** (la restriction au Bénin concerne les localités proposées par la recherche).
 - **Mineur** : la géolocalisation est vérifiée avec une position et des permissions simulées par Chrome, pas avec un vrai GPS.
 
+**Mise en ligne (Vercel)** : déploiement de production depuis une copie propre du dépôt (exactement l'état poussé sur GitHub, sans aucun fichier personnel) ; aucune variable d'environnement ni configuration. Adresse : **https://meteo-benin.vercel.app** (alias de production, **public** : HTTP 200 sans connexion). Parcours réel dans Chrome sur cette adresse : recherche « Parakou », 7 jours, graphique 24 h présent, adresse partagée rouverte, 360 px sans défilement horizontal, 0 erreur console. Remarque : l'adresse propre à chaque déploiement (`…-iiotxk55m-…vercel.app`) répond par une redirection de connexion (protection de Vercel sur les déploiements individuels) ; c'est l'alias `meteo-benin.vercel.app` qu'il faut utiliser.
+
 **Non vérifié**
 - Un vrai téléphone (invite d'autorisation, GPS), Firefox et Safari.
-- La mise en ligne n'a pas été réalisée.
 - Le graphique n'a pas été essayé sur un vrai téléphone ; son rendu dépend du navigateur (Chrome uniquement).

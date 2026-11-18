@@ -1,6 +1,6 @@
 # Phase 4 : Livraison
 
-Rédigé par : Generator · Date : 2026-11-18 · Statut : **en cours** (reste la mise en ligne du dépôt)
+Rédigé par : Generator · Date : 2026-11-18 · Statut : **terminée**
 
 > Ce document a été rédigé pendant la phase, après le README (contrainte de temps), et non avant le code comme les phases précédentes.
 
@@ -11,7 +11,7 @@ Rendre le projet utilisable par quelqu'un d'autre : un README exact qui permet d
 - [x] README : installation, démarrage, choix techniques, ce qui fonctionne, ce qui manque et pourquoi
 - [x] Nettoyage : pas de `console.log`, pas de fichiers inutiles
 - [x] Démarrage vérifié sur un clone neuf en suivant le README
-- [ ] Dépôt en ligne, poussé
+- [x] Dépôt en ligne, poussé
 
 ## Critères de validation
 - [x] Toutes les commandes citées dans le README existent dans `package.json` ; tous ses liens relatifs sont valides
@@ -19,7 +19,7 @@ Rendre le projet utilisable par quelqu'un d'autre : un README exact qui permet d
 - [x] Sur ce clone, un parcours réel avec l'API réelle fonctionne (recherche, choix, 7 jours)
 - [x] `knip` : aucun fichier, export ni dépendance inutilisés ; `console.*` : uniquement `console.error` dans `error.tsx`
 - [x] Les fichiers personnels de travail ne sont ni dans le dépôt ni dans son historique
-- [ ] Le dépôt est accessible en ligne et à jour avec la dernière version
+- [x] Le dépôt est accessible en ligne et à jour avec la dernière version
 
 ## Journal de review
 **Reviewer · 2026-11-18**
@@ -32,4 +32,4 @@ Rendre le projet utilisable par quelqu'un d'autre : un README exact qui permet d
 
 **Remarques**
 - **Mineur** : la compatibilité avec Node 20 (version minimale annoncée) n'a pas été essayée ; tout est testé avec Node 24. Indiqué dans le README.
-- **Non fait** : la mise en ligne (bonus) et le dépôt distant restent à faire.
+- Dépôt public https://github.com/le1ou0/meteo-benin : page accessible sans authentification (HTTP 200), clone HTTPS anonyme réussi, aucun fichier personnel, dernier commit distant identique au dernier commit local. Application déployée : voir `docs/phase-6-bonus-fonctionnalites.md`.
