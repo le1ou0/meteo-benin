@@ -1,6 +1,6 @@
 # Phase 2 : Socle fonctionnel
 
-Rédigé par : Generator · Date : 2026-11-18 · Statut : **en cours**
+Rédigé par : Generator · Date : 2026-11-18 · Statut : **terminée**
 
 ## Objectif
 Une application utilisable de bout en bout : on cherche une localité du Bénin, on voit sa météo actuelle et ses prévisions sur 7 jours, on la met en favori et on la retrouve en un clic, même après un rechargement. Chaque étape informe l'utilisateur (chargement, aucun résultat, erreur avec « Réessayer »).
@@ -17,13 +17,13 @@ La « Vigilance pluie » est intégrée ici (elle fait partie de la carte d'un j
 - **À 2 caractères l'API ne renvoie que des correspondances exactes** (« Co » = aucun résultat) : le message « aucune localité » est donc normal, avec une aide « essayez avec 3 caractères ou plus ».
 
 ## Tâches
-- [ ] Recherche : champ, 2 caractères minimum, requête seulement quand on a fini de taper
-- [ ] Liste des résultats : nom, département, population si connue
-- [ ] Météo actuelle : température, ressentie, humidité, vent, description en français, pictogramme
-- [ ] Prévisions sur 7 jours : date en français, min, max, cumul et probabilité de pluie
-- [ ] « Vigilance pluie » bien visible sur les jours concernés
-- [ ] Favoris : ajouter, retirer, retrouver en un clic, conservés après rechargement
-- [ ] États : chargement, aucun résultat, erreur avec « Réessayer »
+- [x] Recherche : champ, 2 caractères minimum, requête seulement quand on a fini de taper
+- [x] Liste des résultats : nom, département, population si connue
+- [x] Météo actuelle : température, ressentie, humidité, vent, description en français, pictogramme
+- [x] Prévisions sur 7 jours : date en français, min, max, cumul et probabilité de pluie
+- [x] « Vigilance pluie » bien visible sur les jours concernés
+- [x] Favoris : ajouter, retirer, retrouver en un clic, conservés après rechargement
+- [x] États : chargement, aucun résultat, erreur avec « Réessayer »
 
 ## Fichiers
 | Fichier | Action | Rôle |
@@ -86,18 +86,46 @@ Adresse partageable, navigation clavier avancée dans la liste, tests automatis�
 
 ## Critères de validation
 Vérifiés dans Chrome (puppeteer), requêtes réseau comptées et pannes simulées par interception.
-- [ ] Taper « Parakou » lettre par lettre émet **une seule** requête de géocodage (et aucune avant 2 caractères)
-- [ ] Les résultats affichent nom, département et population (« Parakou », « Borgou », « 255 478 hab. ») ; aucun aéroport
-- [ ] « zzzzqq » affiche « Aucune localité du Bénin ne correspond… » ; 1 caractère affiche seulement l'aide
-- [ ] Choisir « Parakou » affiche : température, ressentie, humidité, vent, description française, pictogramme et l'heure de mise à jour
-- [ ] 7 cartes de jour avec date française (`mer. 18 nov.`), min, max, cumul de pluie (1 décimale) et probabilité
-- [ ] Un jour à 20 mm ou à 80 % affiche « Vigilance pluie » ; un jour à 19,9 mm / 79 % ne l'affiche pas (vérifié avec une réponse simulée)
-- [ ] Ajouter aux favoris : la localité apparaît dans « Mes favoris » ; l'ajouter deux fois = 1 seule entrée ; la retirer la supprime
-- [ ] Après rechargement de la page, et dans un nouvel onglet, les favoris sont toujours là ; un clic dessus affiche sa météo
-- [ ] Pendant le chargement : squelette ou « Recherche en cours… » visible
-- [ ] API en erreur (500), injoignable ou lente : message en français + « Réessayer » ; après rétablissement, « Réessayer » affiche le résultat sans recharger ; aucune page blanche
-- [ ] Changer de localité pendant un chargement n'affiche jamais les données de l'ancienne
-- [ ] `npm run typecheck`, `npm run lint` et `npm run build` passent
+- [x] Taper « Parakou » lettre par lettre émet **une seule** requête de géocodage (et aucune avant 2 caractères)
+- [x] Les résultats affichent nom, département et population (« Parakou », « Borgou », « 255 478 hab. ») ; aucun aéroport
+- [x] « zzzzqq » affiche « Aucune localité du Bénin ne correspond… » ; 1 caractère affiche seulement l'aide
+- [x] Choisir « Parakou » affiche : température, ressentie, humidité, vent, description française, pictogramme et l'heure de mise à jour
+- [x] 7 cartes de jour avec date française (`mer. 18 nov.`), min, max, cumul de pluie (1 décimale) et probabilité
+- [x] Un jour à 20 mm ou à 80 % affiche « Vigilance pluie » ; un jour à 19,9 mm / 79 % ne l'affiche pas (vérifié avec une réponse simulée)
+- [x] Ajouter aux favoris : la localité apparaît dans « Mes favoris » ; l'ajouter deux fois = 1 seule entrée ; la retirer la supprime
+- [x] Après rechargement de la page, et dans un nouvel onglet, les favoris sont toujours là ; un clic dessus affiche sa météo
+- [x] Pendant le chargement : squelette ou « Recherche en cours… » visible
+- [x] API en erreur (500), injoignable ou lente : message en français + « Réessayer » ; après rétablissement, « Réessayer » affiche le résultat sans recharger ; aucune page blanche
+- [x] Changer de localité pendant un chargement n'affiche jamais les données de l'ancienne
+- [x] `npm run typecheck`, `npm run lint` et `npm run build` passent
 
 ## Journal de review
-*(rempli par le Reviewer)*
+**Reviewer · 2026-11-18**
+
+Commandes : `npm run typecheck` OK · `npm run lint` OK · `npm run build` OK.
+Vérification : serveur de production (`next start`) piloté par Chrome (puppeteer), requêtes réseau comptées, pannes simulées par interception, API réelle pour les données. **46 vérifications sur 46** réussies sur la dernière exécution.
+
+**Preuves**
+- Anti-rebond : 1 seul caractère = **0 requête** et seule l'aide s'affiche ; taper « Parakou » lettre par lettre = **1 seule requête** de géocodage.
+- Résultats : « Parakou · Borgou · 255 478 hab. », aucun aéroport ; « Abo » propose Abomey (Zou) ; « zzzzqq » et « Co » (2 caractères, correspondance exacte seulement) = « Aucune localité du Bénin ne correspond à « … » » avec le conseil « 3 caractères ou plus », sans erreur.
+- Météo actuelle de Parakou : température égale à celle de l'API (31 °C affichés pour 31,2 °C), ressentie, humidité, vent, description française connue, pictogramme masqué aux lecteurs d'écran, « Mis à jour à 17:30 (heure du Bénin) ».
+- Prévisions : exactement **7 cartes**, la première « mer. 18 nov. », avec Min, Max, Pluie (une décimale, virgule : « 0,0 mm ») et Probabilité.
+- Vigilance (réponse simulée) : badge « ⚠ Vigilance pluie » sur 20 mm, 80 %, 95 % et 25,5 mm ; **pas** de badge à 19,9 mm / 79 %, à 0 mm / 0 % ni à 0 mm / probabilité inconnue (« — »). Arrondis vérifiés : 31,6 -> « 32 °C », vent 7,6 -> « 8 km/h », code 63 -> « Pluie modérée ».
+- Favoris : ajout (bouton `aria-pressed`, entrée dans « Mes favoris », entrée complète dans `localStorage`), retrait puis nouvel ajout = 1 seule entrée, stockage contenant des doublons = affichage sans doublon, rechargement conservé, nouvel onglet conservé, **navigateur fermé puis rouvert** (même profil) conservé, 1 clic sur le favori affiche sa météo, « × » le retire.
+- États : « Recherche en cours… » et squelette de chargement visibles pendant une attente simulée de 1,5 s.
+- Pannes : recherche en erreur 500 ; prévisions en erreur 500, réseau coupé et HTTP 429 : à chaque fois un message français précis, un bouton « Réessayer », une zone `role="alert"`, **aucun texte technique** ; après rétablissement, « Réessayer » affiche le résultat **sans recharger la page** ; API muette : message « met trop de temps à répondre » après **8,0 s**.
+- Course entre deux localités : Parakou (lente, 11 °C simulés) puis Cotonou (rapide, 22 °C) : l'écran finit sur Cotonou à 22 °C, la réponse tardive de Parakou est ignorée.
+- Aucune erreur console ni exception de page (hors échecs réseau simulés).
+
+**Défaut corrigé pendant la phase**
+- **Important (corrigé)** : la règle de lint `react-hooks/set-state-in-effect` a refusé les appels à `setState` directement dans les effets (rendus en cascade). L'état de la recherche et des prévisions est maintenant **dérivé à l'affichage** : chaque réponse porte la clé de la requête qui l'a produite, donc une réponse périmée ne peut jamais s'afficher.
+
+**Remarques**
+- **Mineur (test, pas l'application)** : la météo d'une localité est mémorisée 10 minutes (voulu : peu d'appels). Mon scénario de panne réutilisait la même localité et ne déclenchait aucune requête ; le test utilise maintenant une localité différente par scénario.
+- **Non expliqué** : lors de la **première** exécution complète, l'étape « un clic sur le favori affiche sa météo » (après réouverture du navigateur) a expiré au bout de 15 s. Un scénario isolé identique, puis deux exécutions complètes, l'ont réussie sans changement de code. Je n'avais pas de diagnostic à ce moment et je n'ai pas pu déterminer la cause (latence ou limitation de l'API réelle ?). À surveiller.
+- **Mineur** : à 2 caractères, l'API ne renvoie que des correspondances exactes ; l'utilisateur voit donc « aucune localité » avec le conseil d'essayer 3 caractères.
+
+**Non vérifié**
+- Affichage visuel (captures), écran de 360 px, accessibilité au clavier et mode sombre : phase 3.
+- Les scripts de test ne sont pas dans le dépôt (les tests automatisés sont un bonus de la phase 5).
+

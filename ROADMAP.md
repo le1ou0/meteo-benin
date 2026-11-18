@@ -22,13 +22,13 @@ Légende : `[x]` fait et vérifié, `[ ]` à faire.
 - [x] Favoris : ajout sans doublon, retrait, conservation dans le navigateur
 
 ## Phase 2 : Socle fonctionnel
-- [ ] Recherche : champ, 2 caractères minimum, requête seulement quand on a fini de taper
-- [ ] Liste des résultats : nom, département, population si connue
-- [ ] Météo actuelle : température, ressentie, humidité, vent, description en français, pictogramme
-- [ ] Prévisions sur 7 jours : date en français, min, max, cumul et probabilité de pluie
-- [ ] « Vigilance pluie » bien visible sur les jours concernés
-- [ ] Favoris : ajouter, retirer, retrouver en un clic, conservés après rechargement
-- [ ] États : chargement, aucun résultat, erreur avec « Réessayer »
+- [x] Recherche : champ, 2 caractères minimum, requête seulement quand on a fini de taper
+- [x] Liste des résultats : nom, département, population si connue
+- [x] Météo actuelle : température, ressentie, humidité, vent, description en français, pictogramme
+- [x] Prévisions sur 7 jours : date en français, min, max, cumul et probabilité de pluie
+- [x] « Vigilance pluie » bien visible sur les jours concernés
+- [x] Favoris : ajouter, retirer, retrouver en un clic, conservés après rechargement
+- [x] États : chargement, aucun résultat, erreur avec « Réessayer »
 
 ## Phase 3 : Finition et vérification mobile
 - [ ] Utilisable à 360 px de large, sans défilement horizontal
