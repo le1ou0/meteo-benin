@@ -21,7 +21,13 @@ const parakou: Locality = { id: 2392204, name: "Parakou", department: "Borgou", 
 const cotonou: Locality = { id: 2394819, name: "Cotonou", department: "Littoral", population: 679012, latitude: 6.36, longitude: 2.43 };
 
 const DATES = ["2026-11-18", "2026-11-19", "2026-11-20", "2026-11-21", "2026-11-22", "2026-11-23", "2026-11-24"];
-const forecast = (temperature: number, rain = 0): Forecast => ({
+const HOURS = Array.from({ length: 24 }, (_, hour) => ({
+  time: `2026-11-18T${String((17 + hour) % 24).padStart(2, "0")}:00`,
+  temperature: 25 + (hour % 8),
+  precipitation: hour === 5 ? 2.4 : 0,
+}));
+const forecast = (temperature: number, rain = 0, hourly = HOURS): Forecast => ({
+  hourly,
   current: { time: "2026-11-18T17:15", temperature, apparentTemperature: temperature + 2, humidity: 40, windSpeed: 5, weatherCode: 63, isDay: true },
   daily: DATES.map((date, index) => ({
     date,
@@ -284,5 +290,22 @@ describe("WeatherApp : « Ma position »", () => {
     expect(getCurrentPosition).toHaveBeenCalledTimes(2);
     expect(screen.getByRole("heading", { level: 2, name: "Ma position" })).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
+  });
+});
+
+describe("WeatherApp : graphique sur 24 heures", () => {
+  it("affiche le graphique heure par heure avec la météo", async () => {
+    const { user, input } = await loadApp();
+    await pick(user, input, "Parakou", /Parakou/);
+    expect(screen.getByRole("heading", { name: "Prochaines 24 heures" })).toBeTruthy();
+    expect(screen.getByRole("table", { name: /Détail heure par heure/ })).toBeTruthy();
+  });
+
+  it("masque seulement le graphique quand l'API ne fournit pas les heures", async () => {
+    forecastMock.mockResolvedValue(forecast(30, 0, []));
+    const { user, input } = await loadApp();
+    await pick(user, input, "Parakou", /Parakou/);
+    expect(screen.queryByRole("heading", { name: "Prochaines 24 heures" })).toBeNull();
+    expect(screen.getByRole("heading", { name: "Prévisions sur 7 jours" })).toBeTruthy();
   });
 });

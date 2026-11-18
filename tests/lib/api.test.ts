@@ -245,3 +245,52 @@ describe("erreurs de l'API et du réseau", () => {
     }
   });
 });
+
+describe("fetchForecast : données horaires (24 heures)", () => {
+  const point = { latitude: 9.33716, longitude: 2.63031 };
+  const hourly = {
+    time: ["2026-11-18T17:00", "2026-11-18T18:00", "2026-11-18T19:00"],
+    temperature_2m: [31.2, 30.1, 28.4],
+    precipitation: [0, 0.4, 2.2],
+  };
+
+  it("les demande dans la même requête que les prévisions (aucun appel de plus)", async () => {
+    fetchMock.mockResolvedValue(json({ ...FORECAST, hourly }));
+    const { fetchForecast } = await loadApi();
+    await fetchForecast(point);
+    const params = calledUrl().searchParams;
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(params.get("hourly")?.split(",")).toEqual(["temperature_2m", "precipitation"]);
+    expect(params.get("forecast_hours")).toBe("24");
+  });
+
+  it("convertit les heures en points lisibles", async () => {
+    fetchMock.mockResolvedValue(json({ ...FORECAST, hourly }));
+    const { fetchForecast } = await loadApi();
+    expect((await fetchForecast(point)).hourly).toEqual([
+      { time: "2026-11-18T17:00", temperature: 31.2, precipitation: 0 },
+      { time: "2026-11-18T18:00", temperature: 30.1, precipitation: 0.4 },
+      { time: "2026-11-18T19:00", temperature: 28.4, precipitation: 2.2 },
+    ]);
+  });
+
+  it("ignore seulement les points invalides", async () => {
+    const dirty = { time: ["2026-11-18T17:00", "2026-11-18T18:00", "2026-11-18T19:00"], temperature_2m: [31.2, null, 28.4], precipitation: [0, 0.4, "beaucoup"] };
+    fetchMock.mockResolvedValue(json({ ...FORECAST, hourly: dirty }));
+    const { fetchForecast } = await loadApi();
+    expect((await fetchForecast(point)).hourly.map((entry) => entry.time)).toEqual(["2026-11-18T17:00"]);
+  });
+
+  it.each([
+    ["absentes", undefined],
+    ["vides", { time: [], temperature_2m: [], precipitation: [] }],
+    ["sans température", { time: ["2026-11-18T17:00"], precipitation: [0] }],
+    ["de mauvais type", { time: "17h", temperature_2m: 30, precipitation: 0 }],
+  ])("heures %s : liste vide, et le reste de la météo reste affiché", async (_label, value) => {
+    fetchMock.mockResolvedValue(json({ ...FORECAST, hourly: value }));
+    const { fetchForecast } = await loadApi();
+    const forecast = await fetchForecast(point);
+    expect(forecast.hourly).toEqual([]);
+    expect(forecast.daily).toHaveLength(2);
+  });
+});
